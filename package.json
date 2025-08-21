@@ -1,14 +1,20 @@
 {
-  "name": "Tourify",
+  "name": "tourify",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "dev": "node app.js"
   },
   "author": "Lounes Zengal",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
   }
 }
