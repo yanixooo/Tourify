@@ -36,6 +36,7 @@ jspm_packages/
 .env.test
 .env.local
 .env.production
+config.env
 
 # IDE files
 .vscode/

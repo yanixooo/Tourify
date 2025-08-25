@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start:dev": "nodemon server.js",
+    "start": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -16,6 +16,8 @@
   "dependencies": {
     "dotenv": "^17.2.1",
     "express": "^4.21.2",
+    "mongodb": "^6.18.0",
+    "mongoose": "^5.13.23",
     "morgan": "^1.10.1"
   },
   "devDependencies": {
