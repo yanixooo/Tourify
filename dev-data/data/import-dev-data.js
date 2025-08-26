@@ -5,10 +5,8 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import Tour from '../../models/tourModel.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-dotenv.config({ path: '../../config.env' });
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: join(__dirname, '../../config.env') });
 
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
@@ -16,12 +14,7 @@ const DB = process.env.DATABASE.replace(
 );
 
 mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
+  .connect(DB)
   .then(() => console.log('DB connection successful'));
 
 // READ JSON FILE
