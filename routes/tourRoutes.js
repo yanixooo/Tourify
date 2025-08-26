@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 
-const tourController = require('../controllers/tourController');
+import * as tourController from '../controllers/tourController.js';
 
 const router = express.Router();
 
@@ -14,4 +14,4 @@ router
   .patch(tourController.updateTour)
   .delete(tourController.deleteTour);
 
-module.exports = router;
+export default router;

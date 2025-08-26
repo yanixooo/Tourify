@@ -1,6 +1,6 @@
-const Tour = require('./../models/tourModel');
+import Tour from './../models/tourModel.js';
 
-exports.getAllTours = async (req, res) => {
+export const getAllTours = async (req, res) => {
   try {
     const tours = await Tour.find();
     res.status(200).json({
@@ -18,7 +18,7 @@ exports.getAllTours = async (req, res) => {
   }
 };
 
-exports.getTour = async (req, res) => {
+export const getTour = async (req, res) => {
   try {
     const tour = await Tour.findById(req.params.id);
     res.status(200).json({
@@ -35,7 +35,7 @@ exports.getTour = async (req, res) => {
   }
 };
 
-exports.createTour = async (req, res) => {
+export const createTour = async (req, res) => {
   try {
     const newTour = await Tour.create(req.body);
     res.status(201).json({
@@ -44,10 +44,15 @@ exports.createTour = async (req, res) => {
         tour: newTour,
       },
     });
-  } catch (err) {}
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 
-exports.updateTour = async (req, res) => {
+export const updateTour = async (req, res) => {
   try {
     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -67,7 +72,7 @@ exports.updateTour = async (req, res) => {
   }
 };
 
-exports.deleteTour = async (req, res) => {
+export const deleteTour = async (req, res) => {
   try {
     await Tour.findByIdAndDelete(req.params.id);
     res.status(204).json({

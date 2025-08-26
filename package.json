@@ -1,6 +1,7 @@
 {
   "name": "tourify",
   "version": "1.0.0",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "start": "nodemon server.js",
@@ -18,9 +19,11 @@
     "express": "^4.21.2",
     "mongodb": "^6.18.0",
     "mongoose": "^5.13.23",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.34.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "^15.0.0",
