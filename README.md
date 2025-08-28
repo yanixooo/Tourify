@@ -11,21 +11,25 @@
 ## ✨ Features
 
 🎯 **Modern Architecture**
+
 - Built with ES6 modules for better maintainability
 - Express 5.1.0 for enhanced performance
 - Mongoose 8.18.0 with modern MongoDB integration
 
 🚀 **Tour Management**
+
 - Create, read, update, and delete tours
 - Rich tour data model with ratings, pricing, and dates
 - Image management for tour covers and galleries
 
 📊 **Data Operations**
+
 - Bulk data import/export functionality
 - Sample tour data included
 - Database seeding and cleanup scripts
 
 🛠️ **Developer Experience**
+
 - Modern ESLint configuration with flat config
 - Prettier code formatting
 - Hot reload with Nodemon
@@ -66,18 +70,20 @@ tourify/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yanixooo/Tourify.git
    cd Tourify
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
-3. **Environment setup**
-   Create a `config.env` file in the root directory:
+3. **Environment setup** Create a `config.env` file in the root directory:
+
    ```env
    DATABASE=mongodb+srv://username:<PASSWORD>@cluster.mongodb.net/tourify
    DATABASE_PASSWORD=your_database_password
@@ -86,6 +92,7 @@ tourify/
    ```
 
 4. **Import sample data** (optional)
+
    ```bash
    cd dev-data/data
    node import-dev-data.js --import
@@ -101,6 +108,7 @@ The server will start on `http://localhost:3001`
 ## 📡 API Endpoints
 
 ### Tours
+
 - `GET /api/v1/tours` - Get all tours
 - `GET /api/v1/tours/:id` - Get a specific tour
 - `POST /api/v1/tours` - Create a new tour
@@ -108,6 +116,7 @@ The server will start on `http://localhost:3001`
 - `DELETE /api/v1/tours/:id` - Delete a tour
 
 ### Users
+
 - `GET /api/v1/users` - Get all users
 - `GET /api/v1/users/:id` - Get a specific user
 - `POST /api/v1/users` - Create a new user
@@ -115,6 +124,7 @@ The server will start on `http://localhost:3001`
 - `DELETE /api/v1/users/:id` - Delete a user
 
 ### Example API Response
+
 ```json
 {
   "status": "success",
@@ -166,12 +176,14 @@ npm run format:check
 ## 📊 Data Management
 
 ### Import Sample Data
+
 ```bash
 cd dev-data/data
 node import-dev-data.js --import
 ```
 
 ### Delete All Data
+
 ```bash
 cd dev-data/data
 node import-dev-data.js --delete
@@ -179,23 +191,25 @@ node import-dev-data.js --delete
 
 ## 🧪 Technology Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Node.js** | 18+ | JavaScript runtime |
-| **Express.js** | 5.1.0 | Web framework |
-| **MongoDB** | Latest | NoSQL database |
-| **Mongoose** | 8.18.0 | ODM for MongoDB |
-| **ES6 Modules** | Native | Modern module system |
-| **ESLint** | 8.57.1 | Code linting |
-| **Prettier** | 3.6.2 | Code formatting |
-| **Nodemon** | Latest | Development hot reload |
-| **Morgan** | 1.10.1 | HTTP request logger |
-| **Dotenv** | 17.2.1 | Environment variables |
+| Technology      | Version | Purpose                |
+| --------------- | ------- | ---------------------- |
+| **Node.js**     | 18+     | JavaScript runtime     |
+| **Express.js**  | 5.1.0   | Web framework          |
+| **MongoDB**     | Latest  | NoSQL database         |
+| **Mongoose**    | 8.18.0  | ODM for MongoDB        |
+| **ES6 Modules** | Native  | Modern module system   |
+| **ESLint**      | 8.57.1  | Code linting           |
+| **Prettier**    | 3.6.2   | Code formatting        |
+| **Nodemon**     | Latest  | Development hot reload |
+| **Morgan**      | 1.10.1  | HTTP request logger    |
+| **Dotenv**      | 17.2.1  | Environment variables  |
 
 ## 🏛️ Architecture Highlights
 
 ### ES6 Modules
+
 This project uses modern ES6 import/export syntax:
+
 ```javascript
 // Instead of: const express = require('express')
 import express from 'express';
@@ -205,7 +219,9 @@ export default router;
 ```
 
 ### Modern Mongoose
+
 Clean database connections without deprecated options:
+
 ```javascript
 // Modern approach
 mongoose.connect(DB);
@@ -219,6 +235,7 @@ mongoose.connect(DB, {
 ```
 
 ### Express 5.0
+
 Taking advantage of the latest Express.js features and performance improvements.
 
 ## 🤝 Contributing
@@ -232,6 +249,7 @@ Taking advantage of the latest Express.js features and performance improvements.
 ## 📝 Code Style
 
 This project follows:
+
 - **ESLint** configuration for consistent code quality
 - **Prettier** for automated code formatting
 - **ES6 modules** for modern JavaScript
@@ -240,6 +258,7 @@ This project follows:
 ## 📱 VS Code Setup
 
 The project includes `jsconfig.json` for enhanced VS Code support:
+
 - Better IntelliSense
 - Auto-imports
 - Path resolution
@@ -248,6 +267,7 @@ The project includes `jsconfig.json` for enhanced VS Code support:
 ## 🔒 Environment Variables
 
 Required environment variables:
+
 - `DATABASE` - MongoDB connection string
 - `DATABASE_PASSWORD` - MongoDB password
 - `PORT` - Server port (default: 3001)
@@ -256,6 +276,7 @@ Required environment variables:
 ## 🗂️ Data Model
 
 ### Tour Schema
+
 ```javascript
 {
   name: String (required, unique),
@@ -282,6 +303,7 @@ This project is licensed under the ISC License.
 ## 👨‍💻 Author
 
 **Lounes Zengal**
+
 - GitHub: [@yanixooo](https://github.com/yanixooo)
 
 ## 🙏 Acknowledgments
@@ -294,4 +316,4 @@ This project is licensed under the ISC License.
 
 ⭐ **Star this repo if you found it helpful!**
 
-*Happy coding!* 🚀
+_Happy coding!_ 🚀

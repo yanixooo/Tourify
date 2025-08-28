@@ -11,8 +11,15 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
-// MIDDLWARES
+// MIDDLEWARES
+// Morgan logging middleware - with fallback for dependency timing issues
 if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+} else if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined'));
+} else {
+  // Fallback for development when NODE_ENV isn't set during import
+  // (Due to timing issues with newer dependency versions)
   app.use(morgan('dev'));
 }
 

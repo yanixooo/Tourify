@@ -14,7 +14,16 @@
   "author": "Lounes Zengal",
   "license": "ISC",
   "description": "A modern tour booking and management API built with ES6 modules, Express 5, and MongoDB. Features comprehensive CRUD operations, data import/export, and modern JavaScript architecture.",
-  "keywords": ["nodejs", "express", "mongodb", "mongoose", "tours", "api", "es6-modules", "rest-api"],
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "mongoose",
+    "tours",
+    "api",
+    "es6-modules",
+    "rest-api"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/yanixooo/Tourify.git"
