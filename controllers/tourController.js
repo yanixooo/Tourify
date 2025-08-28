@@ -1,10 +1,26 @@
 import Tour from './../models/tourModel.js';
 import APIFeatures from './../utils/apiFeatures.js';
 
+export const aliasTopTours = (req, res, next) => {
+  req.aliasSettings = {
+    limit: '5',
+    sort: '-ratingsAverage,price',
+    fields: 'name,price,ratingsAverage,summary,difficulty',
+  };
+  next();
+};
+
 export const getAllTours = async (req, res) => {
   try {
+    // Merge alias settings with query parameters
+    const queryObj = { ...req.query };
+
+    if (req.aliasSettings) {
+      Object.assign(queryObj, req.aliasSettings);
+    }
+
     // EXECUTE QUERY
-    const features = new APIFeatures(Tour.find(), req.query)
+    const features = new APIFeatures(Tour.find(), queryObj)
       .filter()
       .sort()
       .limitFields()
@@ -13,7 +29,6 @@ export const getAllTours = async (req, res) => {
     const tours = await features.query;
 
     // SEND RESPONSE
-
     res.status(200).json({
       status: 'success',
       results: tours.length,

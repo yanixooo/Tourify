@@ -9,28 +9,11 @@ class APIFeatures {
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach(el => delete queryObj[el]);
 
-    // Advanced filtering - Handle bracket notation like duration[gte] -> duration: {$gte: value}
-    const processedQuery = {};
+    // Convert query string with operators to MongoDB format
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
 
-    Object.keys(queryObj).forEach(key => {
-      if (key.includes('[') && key.includes(']')) {
-        // Extract field name and operator from duration[gte] format
-        const matches = key.match(/^([^[]+)\[([^\]]+)\]$/);
-        if (matches) {
-          const [, fieldName, operator] = matches;
-          const value = queryObj[key];
-
-          if (!processedQuery[fieldName]) {
-            processedQuery[fieldName] = {};
-          }
-
-          processedQuery[fieldName][`$${operator}`] = value;
-        }
-      } else {
-        processedQuery[key] = queryObj[key];
-      }
-    });
-
+    const processedQuery = JSON.parse(queryStr);
     this.query = this.query.find(processedQuery);
     return this;
   }
