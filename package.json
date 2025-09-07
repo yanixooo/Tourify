@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon server.js",
+    "debug": "nodemon --inspect-brk server.js",
     "start:prod": "NODE_ENV=production nodemon server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",
+    "@types/node": "^24.3.1",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "^15.0.0",
