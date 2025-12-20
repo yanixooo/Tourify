@@ -62,7 +62,7 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have an image cover'],
     },
-    image: [String],
+    images: [String],
     createdAt: {
       type: Date,
       default: Date.now(),
@@ -73,6 +73,36 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -84,6 +114,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtual populate for reviews
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // DOCUMENT MIDDLEWARE .save() and .create()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
@@ -93,6 +130,10 @@ tourSchema.pre('save', function (next) {
 // QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
   this.find({ privateTour: { $ne: true } });
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
 
   this.start = Date.now();
   next();

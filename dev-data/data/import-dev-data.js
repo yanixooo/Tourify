@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import Tour from '../../models/tourModel.js';
+import User from '../../models/userModel.js';
+import Review from '../../models/reviewModel.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: join(__dirname, '../../config.env') });
@@ -17,13 +19,21 @@ mongoose.connect(DB).then(() => console.log('DB connection successful'));
 
 // READ JSON FILE
 const tours = JSON.parse(
-  fs.readFileSync(join(__dirname, 'tours-simple.json'), 'utf-8')
+  fs.readFileSync(join(__dirname, 'tours.json'), 'utf-8')
+);
+const users = JSON.parse(
+  fs.readFileSync(join(__dirname, 'users.json'), 'utf-8')
+);
+const reviews = JSON.parse(
+  fs.readFileSync(join(__dirname, 'reviews.json'), 'utf-8')
 );
 
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
     await Tour.create(tours);
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
     console.log('Data successfully loaded!');
   } catch (err) {
     console.log(err);
@@ -35,6 +45,8 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Tour.deleteMany();
+    await User.deleteMany();
+    await Review.deleteMany();
     console.log('Data successfully deleted!');
   } catch (err) {
     console.log(err);

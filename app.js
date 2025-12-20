@@ -1,18 +1,26 @@
 import express from 'express';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import qs from 'qs';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
 
+import viewRouter from './routes/viewRoutes.js';
 import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
+import reviewRouter from './routes/reviewRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
+// Set up Pug as the view engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
 // Configure Express to use qs for query string parsing
 app.set('query parser', str =>
@@ -40,6 +48,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
@@ -47,8 +56,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// ROUTES
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
