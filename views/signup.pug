@@ -1,21 +1,53 @@
 extends base
 
 block content
-  main.main
-    .login-form
-      h2.heading-secondary.ma-bt-lg Create your account
-      form.form.form--signup
-        .form__group
-          label.form__label(for='name') Your name
-          input#name.form__input(type='text' placeholder='John Doe' required)
-        .form__group
-          label.form__label(for='email') Email address
-          input#email.form__input(type='email' placeholder='you@example.com' required)
-        .form__group
-          label.form__label(for='password') Password
-          input#password.form__input(type='password' placeholder='••••••••' required minlength='8')
-        .form__group.ma-bt-md
-          label.form__label(for='passwordConfirm') Confirm password
-          input#passwordConfirm.form__input(type='password' placeholder='••••••••' required minlength='8')
-        .form__group
-          button.btn.btn--green Sign up
+  main.main.main--auth
+    .auth-container
+      .auth-card.auth-card--signup
+        .auth-card__header
+          .auth-card__icon.auth-card__icon--signup
+            svg
+              use(xlink:href='/img/icons.svg#icon-user-plus')
+          h2.heading-secondary Join Tourify
+          p.auth-card__subtitle Create your account and start exploring
+        
+        form.form.form--signup
+          .form__group.form__group--floating
+            svg.form__input-icon
+              use(xlink:href='/img/icons.svg#icon-user')
+            input#name.form__input(type='text' placeholder=' ' required autocomplete='name')
+            label.form__label--floating(for='name') Your name
+          
+          .form__group.form__group--floating
+            svg.form__input-icon
+              use(xlink:href='/img/icons.svg#icon-mail')
+            input#email.form__input(type='email' placeholder=' ' required autocomplete='email')
+            label.form__label--floating(for='email') Email address
+          
+          .form__group.form__group--floating
+            svg.form__input-icon
+              use(xlink:href='/img/icons.svg#icon-lock')
+            input#password.form__input(type='password' placeholder=' ' required minlength='8' autocomplete='new-password')
+            label.form__label--floating(for='password') Password (min. 8 characters)
+          
+          .form__group.form__group--floating
+            svg.form__input-icon
+              use(xlink:href='/img/icons.svg#icon-lock')
+            input#passwordConfirm.form__input(type='password' placeholder=' ' required minlength='8' autocomplete='new-password')
+            label.form__label--floating(for='passwordConfirm') Confirm password
+          
+          .form__group.form__group--terms
+            label.form__checkbox
+              input(type='checkbox' name='terms' required)
+              span.form__checkbox-custom
+              span I agree to the 
+                a.form__link(href='#') Terms of Service
+                |  and 
+                a.form__link(href='#') Privacy Policy
+          
+          .form__group
+            button.btn.btn--green.btn--full Create Account
+        
+        .auth-card__footer
+          p Already have an account?
+            a.auth-card__link(href='/login')  Log in

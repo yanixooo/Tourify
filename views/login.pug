@@ -1,15 +1,39 @@
 extends base
 
 block content
-  main.main
-    .login-form
-      h2.heading-secondary.ma-bt-lg Log into your account
-      form.form.form--login
-        .form__group
-          label.form__label(for='email') Email address
-          input#email.form__input(type='email' placeholder='you@example.com' required)
-        .form__group.ma-bt-md
-          label.form__label(for='password') Password
-          input#password.form__input(type='password' placeholder='••••••••' required minlength='8')
-        .form__group
-          button.btn.btn--green Login
+  main.main.main--auth
+    .auth-container
+      .auth-card
+        .auth-card__header
+          .auth-card__icon
+            svg
+              use(xlink:href='/img/icons.svg#icon-user')
+          h2.heading-secondary Welcome Back
+          p.auth-card__subtitle Log into your account to continue your adventure
+        
+        form.form.form--login
+          .form__group.form__group--floating
+            svg.form__input-icon
+              use(xlink:href='/img/icons.svg#icon-mail')
+            input#email.form__input(type='email' placeholder=' ' required autocomplete='email')
+            label.form__label--floating(for='email') Email address
+          
+          .form__group.form__group--floating
+            svg.form__input-icon
+              use(xlink:href='/img/icons.svg#icon-lock')
+            input#password.form__input(type='password' placeholder=' ' required minlength='8' autocomplete='current-password')
+            label.form__label--floating(for='password') Password
+          
+          .form__options
+            label.form__checkbox
+              input(type='checkbox' name='remember')
+              span.form__checkbox-custom
+              span Remember me
+            a.form__link(href='#') Forgot password?
+          
+          .form__group
+            button.btn.btn--green.btn--full Login
+
+        .auth-card__footer
+          p Don't have an account?
+            a.auth-card__link(href='/signup')  Sign up now

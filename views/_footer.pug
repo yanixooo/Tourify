@@ -1,10 +1,44 @@
-.footer
-  .footer__logo
-    img(src='/img/logo-green.png' alt='Tourify logo')
-  ul.footer__nav
-    li: a(href='#') About us
-    li: a(href='#') Download apps
-    li: a(href='#') Become a guide
-    li: a(href='#') Careers
-    li: a(href='#') Contact
-  p.footer__copyright &copy; by Tourify. All rights reserved.
+footer.footer
+  .footer__main
+    .footer__brand
+      a.footer__logo(href='/')
+        svg.footer__logo-icon
+          use(xlink:href='/img/icons.svg#icon-map')
+        span.footer__logo-text Tourify
+      p.footer__tagline Your adventure starts here
+    
+    .footer__links
+      .footer__column
+        h4.footer__heading Company
+        ul.footer__nav
+          li: a(href='#') About us
+          li: a(href='#') Careers
+          li: a(href='#') Press
+      .footer__column
+        h4.footer__heading Support
+        ul.footer__nav
+          li: a(href='#') Help Center
+          li: a(href='#') Contact us
+          li: a(href='#') FAQs
+      .footer__column
+        h4.footer__heading Explore
+        ul.footer__nav
+          li: a(href='#') All Tours
+          li: a(href='#') Destinations
+          li: a(href='#') Become a guide
+    
+    .footer__social
+      h4.footer__heading Follow us
+      .footer__social-links
+        a.footer__social-link(href='#' aria-label='Facebook')
+          svg: use(xlink:href='/img/icons.svg#icon-facebook')
+        a.footer__social-link(href='#' aria-label='Twitter')
+          svg: use(xlink:href='/img/icons.svg#icon-twitter')
+        a.footer__social-link(href='#' aria-label='Instagram')
+          svg: use(xlink:href='/img/icons.svg#icon-instagram')
+  
+  .footer__bottom
+    p.footer__copyright &copy; #{new Date().getFullYear()} Tourify. All rights reserved.
+    .footer__legal
+      a(href='#') Privacy Policy
+      a(href='#') Terms of Service

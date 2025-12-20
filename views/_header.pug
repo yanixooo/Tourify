@@ -1,22 +1,38 @@
 header.header
-  nav.nav.nav--tours
-    a.nav__el(href='/') All tours
-    form.nav__search
-      button.nav__search-btn
-        svg
+  .header__container
+    .header__left
+      a.header__brand(href='/')
+        span.header__brand-icon
+          svg
+            use(xlink:href='/img/icons.svg#icon-map')
+        span.header__brand-text Tourify
+      
+      nav.nav.nav--main
+        a.nav__el(href='/') Explore
+        a.nav__el(href='/#popular') Popular
+        a.nav__el(href='/#destinations') Destinations
+    
+    .header__right
+      form.header__search
+        svg.header__search-icon
           use(xlink:href='/img/icons.svg#icon-search')
-      input.nav__search-input(type='text' placeholder='Search tours')
-  
-  .header__logo
-    img(src='/img/logo-white.png' alt='Tourify logo')
-  
-  nav.nav.nav--user
-    if user
-      a.nav__el(href='/my-bookings') My bookings
-      a.nav__el.nav__el--logout(href='/logout') Log out
-      a.nav__el(href='/me')
-        img.nav__user-img(src=`/img/users/${user.photo}` alt=`Photo of ${user.name}`)
-        span= user.name.split(' ')[0]
-    else
-      a.nav__el(href='/login') Log in
-      a.nav__el.nav__el--cta(href='/signup') Sign up
+        input.header__search-input(type='text' placeholder='Where to next?')
+      
+      nav.nav.nav--user
+        if user
+          a.nav__el.nav__el--icon(href='/my-bookings' title='My Bookings')
+            svg
+              use(xlink:href='/img/icons.svg#icon-briefcase')
+          .nav__user-menu
+            a.nav__user-link(href='/me')
+              img.nav__user-img(src=`/img/users/${user.photo}` alt=`Photo of ${user.name}`)
+              span.nav__user-name= user.name.split(' ')[0]
+              svg.nav__user-arrow
+                use(xlink:href='/img/icons.svg#icon-chevron-down')
+          a.nav__el.nav__el--logout(href='/logout')
+            svg
+              use(xlink:href='/img/icons.svg#icon-log-out')
+            span Log out
+        else
+          a.nav__el.nav__el--login(href='/login') Log in
+          a.nav__el.nav__el--cta(href='/signup') Sign up

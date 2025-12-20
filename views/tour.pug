@@ -2,21 +2,32 @@ extends base
 
 mixin overviewBox(label, text, icon)
   .overview-box__detail
-    svg.overview-box__icon
-      use(xlink:href=`/img/icons.svg#icon-${icon}`)
-    span.overview-box__label= label
-    span.overview-box__text= text
+    .overview-box__icon-wrapper
+      svg.overview-box__icon
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+    .overview-box__content
+      span.overview-box__label= label
+      span.overview-box__text= text
 
 mixin reviewCard(review)
-  .reviews__card
+  .reviews__card.animate-on-scroll
     .reviews__avatar
       img.reviews__avatar-img(src=`/img/users/${review.user.photo}` alt=`${review.user.name}`)
-      h6.reviews__user= review.user.name
-    p.reviews__text= review.review
-    .reviews__rating
-      each star in [1, 2, 3, 4, 5]
-        svg.reviews__star(class=`reviews__star--${review.rating >= star ? 'active' : 'inactive'}`)
-          use(xlink:href='/img/icons.svg#icon-star')
+      .reviews__avatar-badge
+        svg
+          use(xlink:href='/img/icons.svg#icon-check')
+    .reviews__content
+      .reviews__header
+        h6.reviews__user= review.user.name
+        .reviews__rating
+          each star in [1, 2, 3, 4, 5]
+            svg.reviews__star(class=`reviews__star--${review.rating >= star ? 'active' : 'inactive'}` style=`--star-index: ${star}`)
+              use(xlink:href='/img/icons.svg#icon-star')
+      p.reviews__text= review.review
+      .reviews__date
+        svg
+          use(xlink:href='/img/icons.svg#icon-calendar')
+        span Recently reviewed
 
 block content
   section.section-header
@@ -25,6 +36,8 @@ block content
       img.header__hero-img(src=`/img/tours/${tour.imageCover}` alt=`${tour.name}`)
     
     .heading-box
+      .heading-box__badge
+        span.badge.badge--popular Featured Tour
       h1.heading-primary
         span= tour.name
       .heading-box__group
@@ -36,12 +49,25 @@ block content
           svg.heading-box__icon
             use(xlink:href='/img/icons.svg#icon-map-pin')
           span.heading-box__text= tour.startLocation ? tour.startLocation.description : 'TBD'
+      .heading-box__stats
+        .heading-box__stat
+          .heading-box__stat-value= tour.ratingsAverage
+          .heading-box__stat-label Rating
+        .heading-box__stat
+          .heading-box__stat-value= tour.ratingsQuantity
+          .heading-box__stat-label Reviews
+        .heading-box__stat
+          .heading-box__stat-value= tour.maxGroupSize
+          .heading-box__stat-label Max Group
 
   section.section-description
-    .overview-box
+    .overview-box.animate-on-scroll
       div
         .overview-box__group
-          h2.heading-secondary.ma-bt-lg Quick facts
+          .overview-box__title
+            svg
+              use(xlink:href='/img/icons.svg#icon-info')
+            h2.heading-secondary Quick facts
           - const date = tour.startDates[0] ? tour.startDates[0].toLocaleString('en-us', {month: 'long', year: 'numeric'}) : 'TBD'
           +overviewBox('Next date', date, 'calendar')
           +overviewBox('Difficulty', tour.difficulty, 'trending-up')
@@ -49,40 +75,76 @@ block content
           +overviewBox('Rating', `${tour.ratingsAverage} / 5`, 'star')
 
         .overview-box__group
-          h2.heading-secondary.ma-bt-lg Your tour guides
+          .overview-box__title
+            svg
+              use(xlink:href='/img/icons.svg#icon-users')
+            h2.heading-secondary Your tour guides
           if tour.guides
             each guide in tour.guides
-              .overview-box__detail
-                img.overview-box__img(src=`/img/users/${guide.photo}` alt=`${guide.name}`)
-                - if (guide.role === 'lead-guide')
-                  span.overview-box__label Lead guide
-                - if (guide.role === 'guide')
-                  span.overview-box__label Tour guide
-                span.overview-box__text= guide.name
+              .overview-box__detail.overview-box__detail--guide
+                .guide-card
+                  img.guide-card__img(src=`/img/users/${guide.photo}` alt=`${guide.name}`)
+                  .guide-card__info
+                    - if (guide.role === 'lead-guide')
+                      span.guide-card__role.guide-card__role--lead Lead guide
+                    - if (guide.role === 'guide')
+                      span.guide-card__role Tour guide
+                    span.guide-card__name= guide.name
 
-    .description-box
-      h2.heading-secondary.ma-bt-lg= `About ${tour.name} tour`
-      - const paragraphs = tour.description.split('\n')
-      each p in paragraphs
-        p.description__text= p
+    .description-box.animate-on-scroll
+      .description-box__header
+        svg
+          use(xlink:href='/img/icons.svg#icon-file-text')
+        h2.heading-secondary= `About ${tour.name} tour`
+      .description-box__content
+        - const paragraphs = tour.description.split('\n')
+        each p in paragraphs
+          p.description__text= p
 
   section.section-pictures
-    if tour.images && tour.images.length
-      each img, i in tour.images
-        .picture-box
-          img.picture-box__img(src=`/img/tours/${img}` alt=`${tour.name} Tour ${i + 1}` class=`picture-box__img--${i + 1}`)
+    .pictures-title.animate-on-scroll
+      h2.heading-secondary Tour Gallery
+      p Explore the beautiful moments from this adventure
+    .pictures-grid
+      if tour.images && tour.images.length
+        each img, i in tour.images
+          .picture-box.animate-on-scroll(class=`animate-delay-${i + 1}`)
+            img.picture-box__img(src=`/img/tours/${img}` alt=`${tour.name} Tour ${i + 1}` class=`picture-box__img--${i + 1}` data-gallery-index=i)
+            .picture-box__overlay
+              svg
+                use(xlink:href='/img/icons.svg#icon-maximize')
 
   section.section-map
+    .map-header.animate-on-scroll
+      h2.heading-secondary Tour Locations
+      p Follow the journey across #{tour.locations ? tour.locations.length : 0} amazing stops
     #map(data-locations=`${JSON.stringify(tour.locations || [])}`)
 
   section.section-reviews
+    .reviews-header.animate-on-scroll
+      .reviews-header__content
+        h2.heading-secondary What Our Travelers Say
+        p Real experiences from real adventurers
+      .reviews-header__stats
+        .reviews-stat
+          span.reviews-stat__value= tour.ratingsAverage
+          span.reviews-stat__label out of 5
+        .reviews-stat__stars
+          each star in [1, 2, 3, 4, 5]
+            svg.reviews-stat__star(class=`${tour.ratingsAverage >= star ? 'active' : ''}`)
+              use(xlink:href='/img/icons.svg#icon-star')
     .reviews
       if tour.reviews && tour.reviews.length
         each review in tour.reviews
           +reviewCard(review)
+      else
+        .reviews__empty
+          svg
+            use(xlink:href='/img/icons.svg#icon-message-circle')
+          p No reviews yet. Be the first to share your experience!
 
   section.section-cta
-    .cta
+    .cta.animate-on-scroll
       .cta__img.cta__img--logo
         img(src='/img/logo-white.png' alt='Tourify logo')
       if tour.images && tour.images.length >= 3
@@ -94,7 +156,16 @@ block content
       .cta__content
         h2.heading-secondary What are you waiting for?
         p.cta__text= `${tour.duration} days. 1 adventure. Infinite memories. Make it yours today!`
+        .cta__price
+          span.cta__price-value $#{tour.price}
+          span.cta__price-label per person
         if user
-          button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`) Book tour now!
+          button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`)
+            span Book tour now!
+            svg.btn__icon
+              use(xlink:href='/img/icons.svg#icon-arrow-right')
         else
-          a.btn.btn--green.span-all-rows(href='/login') Log in to book tour
+          a.btn.btn--green.span-all-rows(href='/login')
+            span Log in to book tour
+            svg.btn__icon
+              use(xlink:href='/img/icons.svg#icon-arrow-right')
