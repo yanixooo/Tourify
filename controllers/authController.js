@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import sendEmail from '../utils/email.js';
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -174,18 +175,34 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  // 3) Send it to user's email (simplified - just return token for now)
+  // 3) Send it to user's email
   try {
     const resetURL = `${req.protocol}://${req.get(
       'host'
     )}/api/v1/users/resetPassword/${resetToken}`;
 
-    // In a full implementation, you would send an email here
-    // For now, we'll just return the reset URL in the response
+    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+
+    await sendEmail({
+      email: user.email,
+      subject: 'Your password reset token (valid for 10 min)',
+      message,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #55c57a;">Password Reset Request</h2>
+          <p>Hi ${user.name},</p>
+          <p>You requested a password reset. Click the button below to reset your password:</p>
+          <a href="${resetURL}" style="display: inline-block; background: #55c57a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Reset Password</a>
+          <p>This link will expire in 10 minutes.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+          <p>— The Tourify Team</p>
+        </div>
+      `,
+    });
+
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',
-      resetURL, // Remove this in production - for testing only
     });
   } catch (err) {
     user.passwordResetToken = undefined;

@@ -1,98 +1,116 @@
-# 🌟 Tourify
+# 🌍 Tourify
 
-> **A modern tour booking and management API built with ES6 modules and cutting-edge technology**
+> **A full-stack tour booking platform with Stripe payments, interactive maps, and modern glassmorphic UI**
 
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-5.1.0-blue.svg)](https://expressjs.com)
-[![Mongoose](https://img.shields.io/badge/Mongoose-8.18.0-red.svg)](https://mongoosejs.com)
-[![ES6 Modules](https://img.shields.io/badge/ES6%20Modules-✅-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-brightgreen.svg)](https://www.mongodb.com/atlas)
+[![Stripe](https://img.shields.io/badge/Stripe-Payments-blueviolet.svg)](https://stripe.com)
+[![Mapbox](https://img.shields.io/badge/Mapbox-GL-orange.svg)](https://www.mapbox.com)
 [![License](https://img.shields.io/badge/License-ISC-purple.svg)](LICENSE)
 
 ## ✨ Features
 
-🎯 **Modern Architecture**
+### 🎨 **Modern UI/UX**
+- Glassmorphic design with iOS-inspired aesthetics
+- Responsive layout for all devices
+- Interactive tour cards with smooth animations
+- Dark/Light theme support
 
-- Built with ES6 modules for better maintainability
-- Express 5.1.0 for enhanced performance
-- Mongoose 8.18.0 with modern MongoDB integration
+### 🔐 **Authentication & Security**
+- JWT-based authentication with secure HTTP-only cookies
+- Password hashing with bcrypt
+- Rate limiting (100 requests/hour per IP)
+- Data sanitization against NoSQL injection & XSS
+- Secure HTTP headers with Helmet
+- CORS configuration
 
-🚀 **Tour Management**
+### 💳 **Stripe Payments**
+- Secure checkout sessions
+- Real-time payment processing
+- Webhook integration for payment confirmation
+- Booking history for users
 
-- Create, read, update, and delete tours
-- Rich tour data model with ratings, pricing, and dates
-- Image management for tour covers and galleries
+### 🗺️ **Interactive Maps**
+- Mapbox GL integration
+- Tour route visualization
+- Location markers with popups
 
-📊 **Data Operations**
+### 📧 **Email Services**
+- Password reset functionality
+- Email notifications via Nodemailer
+- Mailtrap support for development
 
-- Bulk data import/export functionality
-- Sample tour data included
-- Database seeding and cleanup scripts
+### 📸 **Image Upload**
+- User profile photo upload
+- Tour image management (cover + gallery)
+- Image processing with Sharp (resize, optimize)
 
-🛠️ **Developer Experience**
+## 🏗️ Tech Stack
 
-- Modern ESLint configuration with flat config
-- Prettier code formatting
-- Hot reload with Nodemon
-- VS Code optimized with jsconfig.json
-
-## 🏗️ Project Structure
-
-```
-tourify/
-├── 📁 controllers/          # Request handlers
-│   ├── tourController.js    # Tour CRUD operations
-│   └── userController.js    # User management
-├── 📁 models/              # Database schemas
-│   └── tourModel.js        # Tour data model
-├── 📁 routes/              # API routes
-│   ├── tourRoutes.js       # Tour endpoints
-│   └── userRoutes.js       # User endpoints
-├── 📁 dev-data/            # Development data
-│   └── data/
-│       ├── import-dev-data.js  # Data management script
-│       └── tours.json          # Sample tour data
-├── 📁 public/              # Static assets
-│   ├── css/
-│   └── img/
-├── 📄 app.js               # Express app configuration
-├── 📄 server.js            # Server entry point
-└── 📄 package.json         # Dependencies & scripts
-```
+| Category | Technology |
+|----------|------------|
+| **Backend** | Node.js, Express 5.1 |
+| **Database** | MongoDB Atlas, Mongoose 8.18 |
+| **Authentication** | JWT, bcryptjs |
+| **Payments** | Stripe |
+| **Maps** | Mapbox GL JS |
+| **Email** | Nodemailer |
+| **Image Processing** | Multer, Sharp |
+| **Security** | Helmet, HPP, CORS, Rate Limiting |
+| **Views** | Pug Templates |
+| **Styling** | Custom CSS with Glassmorphism |
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ installed
-- MongoDB database (local or cloud)
-- Git for version control
+- Node.js 18+
+- MongoDB Atlas account
+- Stripe account (for payments)
+- Mapbox account (for maps)
 
 ### Installation
 
 1. **Clone the repository**
-
    ```bash
    git clone https://github.com/yanixooo/Tourify.git
    cd Tourify
    ```
 
 2. **Install dependencies**
-
    ```bash
    npm install
    ```
 
-3. **Environment setup** Create a `config.env` file in the root directory:
-
+3. **Configure environment variables**
+   ```bash
+   cp .env.example config.env
+   ```
+   
+   Edit `config.env` with your credentials:
    ```env
-   DATABASE=mongodb+srv://username:<PASSWORD>@cluster.mongodb.net/tourify
-   DATABASE_PASSWORD=your_database_password
-   PORT=3001
    NODE_ENV=development
+   PORT=3000
+   
+   DATABASE=mongodb+srv://user:<PASSWORD>@cluster.mongodb.net/tourify
+   DATABASE_PASSWORD=your_password
+   
+   JWT_SECRET=your-ultra-secure-secret-key
+   JWT_EXPIRES_IN=90d
+   JWT_COOKIE_EXPIRES_IN=90
+   
+   EMAIL_HOST=sandbox.smtp.mailtrap.io
+   EMAIL_PORT=587
+   EMAIL_USERNAME=your_mailtrap_username
+   EMAIL_PASSWORD=your_mailtrap_password
+   EMAIL_FROM=noreply@tourify.com
+   
+   STRIPE_SECRET_KEY=sk_test_xxx
+   STRIPE_WEBHOOK_SECRET=whsec_xxx
    ```
 
-4. **Import sample data** (optional)
-
+4. **Import sample data**
    ```bash
    cd dev-data/data
    node import-dev-data.js --import
@@ -100,201 +118,165 @@ tourify/
 
 5. **Start the server**
    ```bash
-   npm start
+   npm run dev    # Development
+   npm start      # Production
    ```
 
-The server will start on `http://localhost:3001`
+   Visit `http://localhost:3000`
 
 ## 📡 API Endpoints
 
-### Tours
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/users/signup` | Register new user |
+| POST | `/api/v1/users/login` | Login user |
+| GET | `/api/v1/users/logout` | Logout user |
+| POST | `/api/v1/users/forgotPassword` | Request password reset |
+| PATCH | `/api/v1/users/resetPassword/:token` | Reset password |
 
-- `GET /api/v1/tours` - Get all tours
-- `GET /api/v1/tours/:id` - Get a specific tour
-- `POST /api/v1/tours` - Create a new tour
-- `PATCH /api/v1/tours/:id` - Update a tour
-- `DELETE /api/v1/tours/:id` - Delete a tour
+### Tours
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/tours` | Get all tours |
+| GET | `/api/v1/tours/:id` | Get single tour |
+| POST | `/api/v1/tours` | Create tour (admin) |
+| PATCH | `/api/v1/tours/:id` | Update tour (admin) |
+| DELETE | `/api/v1/tours/:id` | Delete tour (admin) |
+| GET | `/api/v1/tours/top-5-cheap` | Top 5 affordable tours |
+| GET | `/api/v1/tours/tour-stats` | Tour statistics |
+
+### Bookings
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/bookings/checkout-session/:tourId` | Get Stripe checkout |
+| GET | `/api/v1/bookings/my-bookings` | Get user's bookings |
 
 ### Users
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/users/me` | Get current user |
+| PATCH | `/api/v1/users/updateMe` | Update current user |
+| PATCH | `/api/v1/users/updateMyPassword` | Update password |
+| DELETE | `/api/v1/users/deleteMe` | Deactivate account |
 
-- `GET /api/v1/users` - Get all users
-- `GET /api/v1/users/:id` - Get a specific user
-- `POST /api/v1/users` - Create a new user
-- `PATCH /api/v1/users/:id` - Update a user
-- `DELETE /api/v1/users/:id` - Delete a user
+### Reviews
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/reviews` | Get all reviews |
+| POST | `/api/v1/tours/:tourId/reviews` | Create review |
 
-### Example API Response
+## 🌐 Deployment
 
-```json
-{
-  "status": "success",
-  "results": 9,
-  "data": {
-    "tours": [
-      {
-        "_id": "5c88fa8cf4afda39709c2955",
-        "name": "The Forest Hiker",
-        "duration": 5,
-        "maxGroupSize": 25,
-        "difficulty": "easy",
-        "ratingsAverage": 4.7,
-        "ratingsQuantity": 37,
-        "price": 397,
-        "summary": "Breathtaking hike through the Canadian Banff National Park",
-        "description": "Ut enim ad minim veniam, quis nostrud exercitation...",
-        "imageCover": "tour-1-cover.jpg",
-        "images": ["tour-1-1.jpg", "tour-1-2.jpg", "tour-1-3.jpg"],
-        "startDates": ["2021-04-25", "2021-07-20", "2021-10-05"]
-      }
-    ]
-  }
-}
+### Deploy to Render
+
+1. Create a [Render](https://render.com) account
+2. Click **New** → **Web Service**
+3. Connect your GitHub repository
+4. Configure:
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+5. Add environment variables in the dashboard
+6. Deploy!
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+### Deploy to Railway
+
+1. Create a [Railway](https://railway.app) account
+2. Click **New Project** → **Deploy from GitHub**
+3. Select your repository
+4. Add environment variables
+5. Deploy!
+
+### Deploy to Heroku
+
+```bash
+heroku create tourify-app
+heroku config:set NODE_ENV=production
+heroku config:set DATABASE=your_mongodb_uri
+# ... set other env vars
+git push heroku main
 ```
+
+### Environment Variables for Production
+
+| Variable | Description |
+|----------|-------------|
+| `NODE_ENV` | Set to `production` |
+| `DATABASE` | MongoDB connection string |
+| `DATABASE_PASSWORD` | MongoDB password |
+| `JWT_SECRET` | Secure random string (min 32 chars) |
+| `JWT_EXPIRES_IN` | Token expiration (e.g., `90d`) |
+| `JWT_COOKIE_EXPIRES_IN` | Cookie expiration in days |
+| `EMAIL_HOST` | SMTP host |
+| `EMAIL_PORT` | SMTP port |
+| `EMAIL_USERNAME` | SMTP username |
+| `EMAIL_PASSWORD` | SMTP password |
+| `EMAIL_FROM` | Sender email address |
+| `STRIPE_SECRET_KEY` | Stripe secret key |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook secret |
 
 ## 🛠️ Development Scripts
 
 ```bash
-# Development server with hot reload
-npm start
-
-# Production server
-npm run start:prod
-
-# Lint code
-npm run lint
-
-# Fix linting issues
-npm run lint:fix
-
-# Format code with Prettier
-npm run format
-
-# Check code formatting
-npm run format:check
+npm run dev          # Development with hot reload
+npm start            # Production server
+npm run start:prod   # Production with NODE_ENV=production
+npm run lint         # Check for linting errors
+npm run lint:fix     # Fix linting errors
+npm run format       # Format code with Prettier
 ```
 
 ## 📊 Data Management
 
-### Import Sample Data
-
 ```bash
+# Import sample data
 cd dev-data/data
 node import-dev-data.js --import
-```
 
-### Delete All Data
-
-```bash
-cd dev-data/data
+# Delete all data
 node import-dev-data.js --delete
 ```
 
-## 🧪 Technology Stack
+## 🔐 Security Features
 
-| Technology      | Version | Purpose                |
-| --------------- | ------- | ---------------------- |
-| **Node.js**     | 18+     | JavaScript runtime     |
-| **Express.js**  | 5.1.0   | Web framework          |
-| **MongoDB**     | Latest  | NoSQL database         |
-| **Mongoose**    | 8.18.0  | ODM for MongoDB        |
-| **ES6 Modules** | Native  | Modern module system   |
-| **ESLint**      | 8.57.1  | Code linting           |
-| **Prettier**    | 3.6.2   | Code formatting        |
-| **Nodemon**     | Latest  | Development hot reload |
-| **Morgan**      | 1.10.1  | HTTP request logger    |
-| **Dotenv**      | 17.2.1  | Environment variables  |
+- **Helmet** - Secure HTTP headers
+- **Rate Limiting** - 100 requests/hour per IP
+- **Data Sanitization** - Against NoSQL injection
+- **HPP** - HTTP Parameter Pollution prevention
+- **CORS** - Cross-Origin Resource Sharing
+- **XSS Protection** - Content Security Policy
+- **Secure Cookies** - HTTP-only, Secure flags
 
-## 🏛️ Architecture Highlights
+## 📁 Project Structure
 
-### ES6 Modules
-
-This project uses modern ES6 import/export syntax:
-
-```javascript
-// Instead of: const express = require('express')
-import express from 'express';
-
-// Instead of: module.exports = router
-export default router;
 ```
-
-### Modern Mongoose
-
-Clean database connections without deprecated options:
-
-```javascript
-// Modern approach
-mongoose.connect(DB);
-
-// vs Old approach with deprecated options
-mongoose.connect(DB, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  // ... other deprecated options
-});
+tourify/
+├── 📁 controllers/       # Request handlers
+├── 📁 models/            # Mongoose schemas
+├── 📁 routes/            # API routes
+├── 📁 views/             # Pug templates
+├── 📁 public/            # Static assets
+│   ├── css/
+│   ├── img/
+│   └── js/
+├── 📁 utils/             # Helper functions
+├── 📁 dev-data/          # Sample data
+├── 📄 app.js             # Express configuration
+├── 📄 server.js          # Entry point
+├── 📄 render.yaml        # Render deployment config
+├── 📄 Procfile           # Heroku deployment
+└── 📄 package.json       # Dependencies
 ```
-
-### Express 5.0
-
-Taking advantage of the latest Express.js features and performance improvements.
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## 📝 Code Style
-
-This project follows:
-
-- **ESLint** configuration for consistent code quality
-- **Prettier** for automated code formatting
-- **ES6 modules** for modern JavaScript
-- **Async/await** for asynchronous operations
-
-## 📱 VS Code Setup
-
-The project includes `jsconfig.json` for enhanced VS Code support:
-
-- Better IntelliSense
-- Auto-imports
-- Path resolution
-- Error detection
-
-## 🔒 Environment Variables
-
-Required environment variables:
-
-- `DATABASE` - MongoDB connection string
-- `DATABASE_PASSWORD` - MongoDB password
-- `PORT` - Server port (default: 3001)
-- `NODE_ENV` - Environment (development/production)
-
-## 🗂️ Data Model
-
-### Tour Schema
-
-```javascript
-{
-  name: String (required, unique),
-  duration: Number (required),
-  maxGroupSize: Number (required),
-  difficulty: String (required),
-  ratingsAverage: Number (default: 4.5),
-  ratingsQuantity: Number (default: 0),
-  price: Number (required),
-  priceDiscount: Number,
-  summary: String (required),
-  description: String,
-  imageCover: String (required),
-  images: [String],
-  createdAt: Date (default: now),
-  startDates: [Date]
-}
-```
 
 ## 📜 License
 
@@ -306,14 +288,6 @@ This project is licensed under the ISC License.
 
 - GitHub: [@yanixooo](https://github.com/yanixooo)
 
-## 🙏 Acknowledgments
-
-- Built with modern JavaScript ES6 modules
-- Powered by Express.js and MongoDB
-- Inspired by modern web development best practices
-
 ---
 
 ⭐ **Star this repo if you found it helpful!**
-
-_Happy coding!_ 🚀

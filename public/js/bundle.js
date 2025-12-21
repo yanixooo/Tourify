@@ -7,15 +7,16 @@ const signupForm = document.querySelector('.form--signup');
 const logoutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
+const bookBtn = document.getElementById('book-tour');
 
 // MAP FUNCTION
 const displayMap = locations => {
   mapboxgl.accessToken =
-    'pk.eyJ1Ijoiam9uYXNzY2htZWR0bWFubiIsImEiOiJjam54ZmM5N3gwNjAzM3dtZDNxYTVlMnd2In0.ytpI7V7w7cyT1Kq5rT9Z1A';
+    'pk.eyJ1IjoieWFuaXhvIiwiYSI6ImNtamYyem9sazBqdGgzZ3NkYzg3OTk2cG8ifQ.hN4K1PW0segACOc-uK1t6w';
 
   const map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/jonasschmedtmann/cjvi9q8jd04mi1cpgmg7ev3dy',
+    style: 'mapbox://styles/mapbox/streets-v12',
     scrollZoom: false,
   });
 
@@ -217,6 +218,39 @@ if (mapBox) {
   if (locations && locations.length > 0) {
     displayMap(locations);
   }
+}
+
+// STRIPE BOOKING
+const bookTour = async tourId => {
+  try {
+    const stripe = Stripe(
+      'pk_test_51SgbqnQakJinG0xJhRn7hsqPWADKbLjeE0onid35aTgWFMvz4YSfUhiASE4x6kYa6vlWJJocbZY7bEUTwcOwGlCJ00dRMpoM8q'
+    );
+
+    // 1) Get checkout session from API
+    const res = await fetch(`/api/v1/bookings/checkout-session/${tourId}`);
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      // 2) Redirect to checkout
+      await stripe.redirectToCheckout({
+        sessionId: data.session.id,
+      });
+    } else {
+      showAlert('error', data.message || 'Error creating checkout session');
+    }
+  } catch (err) {
+    console.error(err);
+    showAlert('error', 'Error processing payment. Please try again.');
+  }
+};
+
+if (bookBtn) {
+  bookBtn.addEventListener('click', e => {
+    e.target.textContent = 'Processing...';
+    const { tourId } = e.target.dataset;
+    bookTour(tourId);
+  });
 }
 
 // ================================
