@@ -51,7 +51,7 @@ block content
           span.heading-box__text= tour.startLocation ? tour.startLocation.description : 'TBD'
       .heading-box__stats
         .heading-box__stat
-          .heading-box__stat-value= tour.ratingsAverage
+          .heading-box__stat-value= tour.ratingsAverage.toFixed(1)
           .heading-box__stat-label Rating
         .heading-box__stat
           .heading-box__stat-value= tour.ratingsQuantity
@@ -72,7 +72,7 @@ block content
           +overviewBox('Next date', date, 'calendar')
           +overviewBox('Difficulty', tour.difficulty, 'trending-up')
           +overviewBox('Participants', `${tour.maxGroupSize} people`, 'user')
-          +overviewBox('Rating', `${tour.ratingsAverage} / 5`, 'star')
+          +overviewBox('Rating', `${tour.ratingsAverage.toFixed(1)} / 5`, 'star')
 
         .overview-box__group
           .overview-box__title
@@ -127,7 +127,7 @@ block content
         p Real experiences from real adventurers
       .reviews-header__stats
         .reviews-stat
-          span.reviews-stat__value= tour.ratingsAverage
+          span.reviews-stat__value= tour.ratingsAverage.toFixed(1)
           span.reviews-stat__label out of 5
         .reviews-stat__stars
           each star in [1, 2, 3, 4, 5]
