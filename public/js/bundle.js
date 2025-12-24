@@ -17,8 +17,11 @@ const displayMap = locations => {
   const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v12',
-    scrollZoom: false,
+    scrollZoom: true,
   });
+
+  // Add zoom and rotation controls
+  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
   const bounds = new mapboxgl.LngLatBounds();
 
@@ -468,6 +471,53 @@ const prepareAnimations = () => {
   });
 };
 
+// Drag to scroll for reviews section
+const initDragScroll = () => {
+  const reviews = document.querySelector('.reviews');
+  if (!reviews) return;
+
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  reviews.addEventListener('mousedown', e => {
+    isDown = true;
+    reviews.classList.add('dragging');
+    startX = e.pageX - reviews.offsetLeft;
+    scrollLeft = reviews.scrollLeft;
+  });
+
+  reviews.addEventListener('mouseleave', () => {
+    isDown = false;
+    reviews.classList.remove('dragging');
+  });
+
+  reviews.addEventListener('mouseup', () => {
+    isDown = false;
+    reviews.classList.remove('dragging');
+  });
+
+  reviews.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - reviews.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    reviews.scrollLeft = scrollLeft - walk;
+  });
+
+  // Touch support for mobile
+  reviews.addEventListener('touchstart', e => {
+    startX = e.touches[0].pageX - reviews.offsetLeft;
+    scrollLeft = reviews.scrollLeft;
+  }, { passive: true });
+
+  reviews.addEventListener('touchmove', e => {
+    const x = e.touches[0].pageX - reviews.offsetLeft;
+    const walk = (x - startX) * 2;
+    reviews.scrollLeft = scrollLeft - walk;
+  }, { passive: true });
+};
+
 // Keyboard navigation support
 const initKeyboardNav = () => {
   document.addEventListener('keydown', e => {
@@ -490,6 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCardParallax();
   initRippleEffect();
   initKeyboardNav();
+  initDragScroll();
 });
 
 // Re-initialize animations after page transitions

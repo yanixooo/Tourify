@@ -644,6 +644,23 @@ body {
   overflow-x: scroll;
   -ms-scroll-snap-type: x mandatory;
   scroll-snap-type: x mandatory;
+  cursor: grab;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.reviews::-webkit-scrollbar {
+  display: none;
+}
+
+.reviews.dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
 }
 
 .reviews__card {
