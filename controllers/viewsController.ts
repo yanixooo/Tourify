@@ -1,9 +1,16 @@
+import { Request, Response, NextFunction } from 'express';
 import Tour from '../models/tourModel.js';
 import Booking from '../models/bookingModel.js';
+import { IUser } from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 
-export const getOverview = catchAsync(async (req, res, next) => {
+// Extend Request to include user
+interface AuthRequest extends Request {
+  user?: IUser;
+}
+
+export const getOverview = catchAsync(async (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
   // 1) Get tour data from collection
   const tours = await Tour.find();
 
@@ -15,19 +22,19 @@ export const getOverview = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getTour = catchAsync(async (req, res, next) => {
+export const getTour = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   // 1) Get the data, for the requested tour (including reviews and guides)
   // Try to find by slug first, then by ID
   let tour = await Tour.findOne({ slug: req.params.slug }).populate({
     path: 'reviews',
-    fields: 'review rating user',
+    select: 'review rating user',
   });
 
   if (!tour) {
     // Try to find by ID if slug lookup failed
     tour = await Tour.findById(req.params.slug).populate({
       path: 'reviews',
-      fields: 'review rating user',
+      select: 'review rating user',
     });
   }
 
@@ -43,27 +50,27 @@ export const getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getLoginForm = (req, res) => {
+export const getLoginForm = (_req: Request, res: Response): void => {
   res.status(200).render('login', {
     title: 'Log into your account',
   });
 };
 
-export const getSignupForm = (req, res) => {
+export const getSignupForm = (_req: Request, res: Response): void => {
   res.status(200).render('signup', {
     title: 'Create your account',
   });
 };
 
-export const getAccount = (req, res) => {
+export const getAccount = (_req: Request, res: Response): void => {
   res.status(200).render('account', {
     title: 'Your account',
   });
 };
 
-export const getMyTours = catchAsync(async (req, res, next) => {
+export const getMyTours = catchAsync(async (req: AuthRequest, res: Response, _next: NextFunction): Promise<void> => {
   // 1) Find all bookings
-  const bookings = await Booking.find({ user: req.user.id });
+  const bookings = await Booking.find({ user: req.user?.id });
 
   // 2) Find tours with the returned IDs
   const tourIDs = bookings.map(el => el.tour);

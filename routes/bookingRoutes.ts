@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router } from 'express';
 import {
   getCheckoutSession,
   getAllBookings,
@@ -10,7 +10,7 @@ import {
 } from '../controllers/bookingController.js';
 import { protect, restrictTo } from '../controllers/authController.js';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 // All routes below this middleware are protected
 router.use(protect);

@@ -1,17 +1,35 @@
-import multer from 'multer';
+import multer, { FileFilterCallback } from 'multer';
 import sharp from 'sharp';
+import { Request, Response, NextFunction } from 'express';
 import Tour from './../models/tourModel.js';
 import APIFeatures from './../utils/apiFeatures.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 
+// Extend Express Request for file uploads
+interface TourRequest extends Request {
+  files?: {
+    imageCover?: Express.Multer.File[];
+    images?: Express.Multer.File[];
+  };
+  aliasSettings?: {
+    limit: string;
+    sort: string;
+    fields: string;
+  };
+}
+
 const multerStorage = multer.memoryStorage();
 
-const multerFilter = (req, file, cb) => {
+const multerFilter = (
+  _req: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+): void => {
   if (file.mimetype.startsWith('image')) {
     cb(null, true);
   } else {
-    cb(new AppError('Not an image! Please upload only images.', 400), false);
+    cb(new AppError('Not an image! Please upload only images.', 400) as unknown as null, false);
   }
 };
 
@@ -25,8 +43,8 @@ export const uploadTourImages = upload.fields([
   { name: 'images', maxCount: 3 },
 ]);
 
-export const resizeTourImages = catchAsync(async (req, res, next) => {
-  if (!req.files.imageCover && !req.files.images) return next();
+export const resizeTourImages = catchAsync(async (req: TourRequest, _res: Response, next: NextFunction): Promise<void> => {
+  if (!req.files?.imageCover && !req.files?.images) return next();
 
   // 1) Cover image
   if (req.files.imageCover) {
@@ -59,8 +77,9 @@ export const resizeTourImages = catchAsync(async (req, res, next) => {
   next();
 });
 
-export const aliasTopTours = (req, res, next) => {
-  req.aliasSettings = {
+export const aliasTopTours = (req: Request, _res: Response, next: NextFunction): void => {
+  const tourReq = req as TourRequest;
+  tourReq.aliasSettings = {
     limit: '5',
     sort: '-ratingsAverage,price',
     fields: 'name,price,ratingsAverage,summary,difficulty',
@@ -68,7 +87,7 @@ export const aliasTopTours = (req, res, next) => {
   next();
 };
 
-export const getAllTours = catchAsync(async (req, res, next) => {
+export const getAllTours = catchAsync(async (req: TourRequest, res: Response, _next: NextFunction): Promise<void> => {
   // Merge alias settings with query parameters
   const queryObj = { ...req.query };
 
@@ -94,7 +113,7 @@ export const getAllTours = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getTour = catchAsync(async (req, res, next) => {
+export const getTour = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const tour = await Tour.findById(req.params.id);
 
   if (!tour) {
@@ -108,7 +127,7 @@ export const getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-export const createTour = catchAsync(async (req, res, next) => {
+export const createTour = catchAsync(async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
   const newTour = await Tour.create(req.body);
   res.status(201).json({
     status: 'success',
@@ -118,7 +137,7 @@ export const createTour = catchAsync(async (req, res, next) => {
   });
 });
 
-export const updateTour = catchAsync(async (req, res, next) => {
+export const updateTour = catchAsync(async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -131,7 +150,7 @@ export const updateTour = catchAsync(async (req, res, next) => {
   });
 });
 
-export const deleteTour = catchAsync(async (req, res, next) => {
+export const deleteTour = catchAsync(async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
   await Tour.findByIdAndDelete(req.params.id);
   res.status(204).json({
     status: 'success',
@@ -139,7 +158,7 @@ export const deleteTour = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getTourStats = catchAsync(async (req, res, next) => {
+export const getTourStats = catchAsync(async (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
   const stats = await Tour.aggregate([
     {
       $match: { ratingsAverage: { $gte: 4.5 } },
@@ -170,8 +189,8 @@ export const getTourStats = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getMonthlyPlan = catchAsync(async (req, res, next) => {
-  const year = req.params.year * 1;
+export const getMonthlyPlan = catchAsync(async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+  const year = Number(req.params.year);
   const plan = await Tour.aggregate([
     {
       $unwind: '$startDates',

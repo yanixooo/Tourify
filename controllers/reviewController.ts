@@ -1,9 +1,16 @@
+import { Request, Response, NextFunction } from 'express';
 import Review from '../models/reviewModel.js';
+import { IUser } from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 
-export const getAllReviews = catchAsync(async (req, res, next) => {
-  let filter = {};
+// Extend Request to include user
+interface AuthRequest extends Request {
+  user?: IUser;
+}
+
+export const getAllReviews = catchAsync(async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+  let filter: { tour?: string } = {};
   if (req.params.tourId) filter = { tour: req.params.tourId };
 
   const reviews = await Review.find(filter);
@@ -17,7 +24,7 @@ export const getAllReviews = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getReview = catchAsync(async (req, res, next) => {
+export const getReview = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const review = await Review.findById(req.params.id);
 
   if (!review) {
@@ -32,14 +39,14 @@ export const getReview = catchAsync(async (req, res, next) => {
   });
 });
 
-export const setTourUserIds = (req, res, next) => {
+export const setTourUserIds = (req: AuthRequest, _res: Response, next: NextFunction): void => {
   // Allow nested routes
   if (!req.body.tour) req.body.tour = req.params.tourId;
-  if (!req.body.user) req.body.user = req.user.id;
+  if (!req.body.user) req.body.user = req.user?.id;
   next();
 };
 
-export const createReview = catchAsync(async (req, res, next) => {
+export const createReview = catchAsync(async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
   const newReview = await Review.create(req.body);
 
   res.status(201).json({
@@ -50,7 +57,7 @@ export const createReview = catchAsync(async (req, res, next) => {
   });
 });
 
-export const updateReview = catchAsync(async (req, res, next) => {
+export const updateReview = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const review = await Review.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -68,7 +75,7 @@ export const updateReview = catchAsync(async (req, res, next) => {
   });
 });
 
-export const deleteReview = catchAsync(async (req, res, next) => {
+export const deleteReview = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const review = await Review.findByIdAndDelete(req.params.id);
 
   if (!review) {

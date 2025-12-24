@@ -1,7 +1,46 @@
-import mongoose from 'mongoose';
-import slugify from 'slugify';
+import mongoose, { Document, Model, Schema } from 'mongoose';
+import { createRequire } from 'module';
 
-const tourSchema = new mongoose.Schema(
+const require = createRequire(import.meta.url);
+const slugify = require('slugify');
+
+// Location interface for GeoJSON
+export interface ILocation {
+  type: 'Point';
+  coordinates: [number, number];
+  address?: string;
+  description?: string;
+  day?: number;
+}
+
+// Tour document interface
+export interface ITour extends Document {
+  name: string;
+  slug: string;
+  duration: number;
+  maxGroupSize: number;
+  difficulty: 'easy' | 'medium' | 'difficult';
+  ratingsAverage: number;
+  ratingsQuantity: number;
+  price: number;
+  priceDiscount?: number;
+  summary: string;
+  description?: string;
+  imageCover: string;
+  images: string[];
+  createdAt: Date;
+  startDates: Date[];
+  privateTour: boolean;
+  startLocation: ILocation;
+  locations: ILocation[];
+  guides: mongoose.Types.ObjectId[];
+  durationWeeks?: number;
+}
+
+// Tour model interface
+export interface ITourModel extends Model<ITour> {}
+
+const tourSchema = new Schema<ITour, ITourModel>(
   {
     name: {
       type: String,
@@ -42,7 +81,7 @@ const tourSchema = new mongoose.Schema(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function (val) {
+        validator: function (this: ITour, val: number): boolean {
           // this only points to current document on NEW document creation
           return val < this.price;
         },
@@ -99,7 +138,7 @@ const tourSchema = new mongoose.Schema(
     ],
     guides: [
       {
-        type: mongoose.Schema.ObjectId,
+        type: Schema.ObjectId,
         ref: 'User',
       },
     ],
@@ -110,7 +149,7 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
-tourSchema.virtual('durationWeeks').get(function () {
+tourSchema.virtual('durationWeeks').get(function (this: ITour) {
   return this.duration / 7;
 });
 
@@ -128,7 +167,7 @@ tourSchema.pre('save', function (next) {
 });
 
 // QUERY MIDDLEWARE
-tourSchema.pre(/^find/, function (next) {
+tourSchema.pre(/^find/, function (this: any, next) {
   this.find({ privateTour: { $ne: true } });
   this.populate({
     path: 'guides',
@@ -139,8 +178,8 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.post(/^find/, function (docs, next) {
-  console.log(`Query took ${Date.now() - this.start} milliseconds`);
+tourSchema.post(/^find/, function (this: any, _docs, next) {
+  console.log(`Query took ${Date.now() - (this.start || 0)} milliseconds`);
   next();
 });
 
@@ -151,6 +190,6 @@ tourSchema.pre('aggregate', function (next) {
   next();
 });
 
-const Tour = mongoose.model('Tour', tourSchema);
+const Tour = mongoose.model<ITour, ITourModel>('Tour', tourSchema);
 
 export default Tour;

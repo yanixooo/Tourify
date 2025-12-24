@@ -1,8 +1,8 @@
-import express from 'express';
+import express, { Router } from 'express';
 import * as viewsController from '../controllers/viewsController.js';
 import * as authController from '../controllers/authController.js';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 // Middleware to check if user is logged in (for rendering)
 router.use(authController.isLoggedIn);

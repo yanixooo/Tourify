@@ -1,9 +1,9 @@
-import express from 'express';
+import express, { Router } from 'express';
 
 import * as tourController from '../controllers/tourController.js';
 import { protect, restrictTo } from '../controllers/authController.js';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 router
   .route('/top-5-cheap')

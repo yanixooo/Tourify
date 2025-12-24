@@ -1,10 +1,17 @@
 import nodemailer from 'nodemailer';
 
-const sendEmail = async options => {
+interface EmailOptions {
+  email: string;
+  subject: string;
+  message: string;
+  html?: string;
+}
+
+const sendEmail = async (options: EmailOptions): Promise<void> => {
   // 1) Create a transporter
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
     auth: {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,

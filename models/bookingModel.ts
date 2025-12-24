@@ -1,14 +1,26 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
-const bookingSchema = new mongoose.Schema(
+// Booking document interface
+export interface IBooking extends Document {
+  tour: Types.ObjectId;
+  user: Types.ObjectId;
+  price: number;
+  createdAt: Date;
+  paid: boolean;
+}
+
+// Booking model interface
+export interface IBookingModel extends Model<IBooking> {}
+
+const bookingSchema = new Schema<IBooking, IBookingModel>(
   {
     tour: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.ObjectId,
       ref: 'Tour',
       required: [true, 'Booking must belong to a Tour!'],
     },
     user: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.ObjectId,
       ref: 'User',
       required: [true, 'Booking must belong to a User!'],
     },
@@ -31,7 +43,7 @@ const bookingSchema = new mongoose.Schema(
   }
 );
 
-bookingSchema.pre(/^find/, function (next) {
+bookingSchema.pre(/^find/, function (this: mongoose.Query<IBooking[], IBooking>, next) {
   this.populate('user').populate({
     path: 'tour',
     select: 'name',
@@ -39,6 +51,6 @@ bookingSchema.pre(/^find/, function (next) {
   next();
 });
 
-const Booking = mongoose.model('Booking', bookingSchema);
+const Booking = mongoose.model<IBooking, IBookingModel>('Booking', bookingSchema);
 
 export default Booking;

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction, Application } from 'express';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import path from 'path';
@@ -20,10 +20,19 @@ import userRouter from './routes/userRoutes.js';
 import reviewRouter from './routes/reviewRoutes.js';
 import bookingRouter from './routes/bookingRoutes.js';
 
+// Extend Express Request
+declare global {
+  namespace Express {
+    interface Request {
+      requestTime?: string;
+    }
+  }
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const app = express();
+const app: Application = express();
 
 // Enable CORS
 app.use(cors());
@@ -89,7 +98,7 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // Configure Express to use qs for query string parsing
-app.set('query parser', str =>
+app.set('query parser', (str: string) =>
   qs.parse(str, {
     allowDots: true,
     allowPrototypes: false,
@@ -141,7 +150,7 @@ app.use(compression());
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
 
-app.use((req, res, next) => {
+app.use((req: Request, _res: Response, next: NextFunction) => {
   req.requestTime = new Date().toISOString();
   next();
 });
@@ -153,7 +162,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);
 
-app.all('*', (req, res, next) => {
+app.all('*', (req: Request, _res: Response, next: NextFunction) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 

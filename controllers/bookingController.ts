@@ -1,19 +1,25 @@
 import Stripe from 'stripe';
+import { Request, Response, NextFunction } from 'express';
 import Tour from '../models/tourModel.js';
-import User from '../models/userModel.js';
+import User, { IUser } from '../models/userModel.js';
 import Booking from '../models/bookingModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 
+// Extend Request to include user
+interface AuthRequest extends Request {
+  user?: IUser;
+}
+
 // Initialize Stripe lazily to avoid issues with env vars not being loaded
-const getStripe = () => {
+const getStripe = (): Stripe | null => {
   if (!process.env.STRIPE_SECRET_KEY) {
     return null;
   }
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 };
 
-export const getCheckoutSession = catchAsync(async (req, res, next) => {
+export const getCheckoutSession = catchAsync(async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   const stripe = getStripe();
   if (!stripe) {
     return next(
@@ -36,7 +42,7 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
     mode: 'payment',
     success_url: `${req.protocol}://${req.get('host')}/my-tours?alert=booking`,
     cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
-    customer_email: req.user.email,
+    customer_email: req.user?.email,
     client_reference_id: req.params.tourId,
     line_items: [
       {
@@ -63,52 +69,60 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
   });
 });
 
-export const createBookingCheckout = catchAsync(async (req, res, next) => {
+export const createBookingCheckout = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   // This is only TEMPORARY, because it's UNSECURE: everyone can make bookings without paying
   const { tour, user, price } = req.query;
 
   if (!tour && !user && !price) return next();
-  await Booking.create({ tour, user, price });
+  await Booking.create({ tour, user, price: Number(price) });
 
   res.redirect(req.originalUrl.split('?')[0]);
 });
 
-export const webhookCheckout = async (req, res, next) => {
+interface StripeSession {
+  client_reference_id: string;
+  customer_email: string;
+  amount_total: number;
+}
+
+export const webhookCheckout = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
   const stripe = getStripe();
   if (!stripe) {
-    return res.status(500).send('Payment system not configured');
+    res.status(500).send('Payment system not configured');
+    return;
   }
 
-  const signature = req.headers['stripe-signature'];
+  const signature = req.headers['stripe-signature'] as string;
 
-  let event;
+  let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET as string
     );
   } catch (err) {
-    return res.status(400).send(`Webhook error: ${err.message}`);
+    res.status(400).send(`Webhook error: ${(err as Error).message}`);
+    return;
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
+    const session = event.data.object as StripeSession;
     await createBookingFromSession(session);
   }
 
   res.status(200).json({ received: true });
 };
 
-const createBookingFromSession = async session => {
+const createBookingFromSession = async (session: StripeSession): Promise<void> => {
   const tour = session.client_reference_id;
-  const user = (await User.findOne({ email: session.customer_email }))._id;
+  const user = (await User.findOne({ email: session.customer_email }))?._id;
   const price = session.amount_total / 100;
   await Booking.create({ tour, user, price });
 };
 
 // CRUD Operations for bookings
-export const getAllBookings = catchAsync(async (req, res, next) => {
+export const getAllBookings = catchAsync(async (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
   const bookings = await Booking.find();
 
   res.status(200).json({
@@ -120,7 +134,7 @@ export const getAllBookings = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getBooking = catchAsync(async (req, res, next) => {
+export const getBooking = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const booking = await Booking.findById(req.params.id);
 
   if (!booking) {
@@ -135,7 +149,7 @@ export const getBooking = catchAsync(async (req, res, next) => {
   });
 });
 
-export const createBooking = catchAsync(async (req, res, next) => {
+export const createBooking = catchAsync(async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
   const newBooking = await Booking.create(req.body);
 
   res.status(201).json({
@@ -146,7 +160,7 @@ export const createBooking = catchAsync(async (req, res, next) => {
   });
 });
 
-export const updateBooking = catchAsync(async (req, res, next) => {
+export const updateBooking = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const booking = await Booking.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -164,7 +178,7 @@ export const updateBooking = catchAsync(async (req, res, next) => {
   });
 });
 
-export const deleteBooking = catchAsync(async (req, res, next) => {
+export const deleteBooking = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const booking = await Booking.findByIdAndDelete(req.params.id);
 
   if (!booking) {
@@ -177,8 +191,8 @@ export const deleteBooking = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getMyBookings = catchAsync(async (req, res, next) => {
-  const bookings = await Booking.find({ user: req.user.id });
+export const getMyBookings = catchAsync(async (req: AuthRequest, res: Response, _next: NextFunction): Promise<void> => {
+  const bookings = await Booking.find({ user: req.user?.id });
 
   const tourIDs = bookings.map(el => el.tour);
   const tours = await Tour.find({ _id: { $in: tourIDs } });
