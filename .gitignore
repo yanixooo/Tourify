@@ -13,6 +13,9 @@ pids
 # Coverage directory used by tools like istanbul
 coverage/
 
+# TypeScript compiled output
+dist/
+
 # Compiled binary addons
 build/Release
 
